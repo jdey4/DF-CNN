@@ -148,11 +148,14 @@ def model_setup(data_type, data_input_dim, model_type, cnn_padding_type_same=Tru
             model_hyperpara['hidden_layer'] = [256, 64]
         else:
             ## CNN-FFNN case
-            model_hyperpara['hidden_layer'] = [64]
-        model_hyperpara['kernel_sizes'] = [3, 3, 3, 3, 3, 3, 3, 3]
-        model_hyperpara['stride_sizes'] = [1, 1, 1, 1, 1, 1, 1, 1]
-        model_hyperpara['channel_sizes'] = [32, 32, 64, 64]
-        model_hyperpara['pooling_size'] = [1, 1, 2, 2, 1, 1, 2, 2]
+            #model_hyperpara['hidden_layer'] = [64]
+            #jd's change
+            model_hyperpara['hidden_layer'] = [2000, 2000]
+        model_hyperpara['kernel_sizes'] = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        model_hyperpara['stride_sizes'] = [1, 1, 2, 2, 2, 2, 2, 2, 2, 2]
+        #model_hyperpara['channel_sizes'] = [32, 32, 64, 64]
+        model_hyperpara['channel_sizes'] = [16, 32, 64, 128, 254]
+        model_hyperpara['pooling_size'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     elif 'officehome' in data_type:
         model_hyperpara['batch_size'] = 16
         model_hyperpara['hidden_layer'] = [256, 64]
@@ -212,9 +215,12 @@ def model_setup(data_type, data_input_dim, model_type, cnn_padding_type_same=Tru
             model_hyperpara['cnn_KB_sizes'] = [2, 16, 2, 24, 2, 32, 2, 36]
             model_hyperpara['cnn_TS_sizes'] = [3, 24, 3, 48, 3, 64, 3, 72]
         elif 'cifar100' in data_type:
-            model_hyperpara['cnn_deconv_stride_sizes'] = [2, 2, 2, 2, 2, 2, 2, 2]
+            '''model_hyperpara['cnn_deconv_stride_sizes'] = [2, 2, 2, 2, 2, 2, 2, 2]
             model_hyperpara['cnn_KB_sizes'] = [2, 16, 2, 24, 2, 32, 2, 36]
-            model_hyperpara['cnn_TS_sizes'] = [3, 24, 3, 48, 3, 64, 3, 72]
+            model_hyperpara['cnn_TS_sizes'] = [3, 24, 3, 48, 3, 64, 3, 72]'''
+            model_hyperpara['cnn_deconv_stride_sizes'] = [1, 1, 2, 2, 2, 2, 2, 2, 2, 2]
+            model_hyperpara['cnn_KB_sizes'] = [2, 16, 2, 24, 2, 32, 2, 36, 2, 40]
+            model_hyperpara['cnn_TS_sizes'] = [3, 24, 3, 48, 3, 64, 3, 72, 3, 80]
         elif 'officehome' in data_type:
             model_hyperpara['cnn_KB_sizes'] = [6, 24, 3, 64, 2, 64, 2, 64]
             model_hyperpara['cnn_TS_sizes'] = [3, 48, 3, 128, 3, 128, 3, 128]
