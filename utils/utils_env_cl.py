@@ -103,7 +103,7 @@ def num_data_points(data_type, data_percent):
         elif data_percent == 90:
             return (3750, 750, 1000)
         elif data_percent == 100:
-            return (4170, 830, 1000)
+            return (410, 80, 1000) #JD changed the proportion to run on 500 datasamples
         else:
             return (None, None, None)
 
@@ -145,7 +145,8 @@ def model_setup(data_type, data_input_dim, model_type, cnn_padding_type_same=Tru
     elif 'cifar100' in data_type:
         model_hyperpara['batch_size'] = 10
         if 'ffnn' in model_type.lower():
-            model_hyperpara['hidden_layer'] = [256, 64]
+            #model_hyperpara['hidden_layer'] = [256, 64]
+            model_hyperpara['hidden_layer'] = [2000, 2000]
         else:
             ## CNN-FFNN case
             #model_hyperpara['hidden_layer'] = [64]

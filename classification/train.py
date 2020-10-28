@@ -1,6 +1,7 @@
 import os, sys
 import timeit
 from random import shuffle
+import pickle
 
 import numpy as np
 import tensorflow as tf
@@ -90,6 +91,14 @@ def model_generation(model_architecture, model_hyperpara, train_hyperpara, data_
 
 #### module of training/testing one model
 def train(model_architecture, model_hyperpara, train_hyperpara, dataset, data_type, doLifelong, useGPU=False, GPU_device=0, save_param=False, param_folder_path='saved_param', save_param_interval=100, save_graph=False, tfInitParam=None):
+
+    ##JD code
+    count = 0
+    
+    with open('./task_count.pickle','rb') as f:
+        tasks_to_complete = pickle.load(f)
+
+
     assert ('progressive' not in model_architecture and 'den' not in model_architecture and 'dynamically' not in model_architecture), "Use train function appropriate to the architecture"
 
     config = tf.ConfigProto()
@@ -208,6 +217,16 @@ def train(model_architecture, model_hyperpara, train_hyperpara, dataset, data_ty
             if doLifelong and learning_step >= epoch_bias+min(patience, learning_step_max//num_task) and len(task_training_order) > 0:
                 print('\n\t>>Change to new task!<<\n')
 
+                ##### JD version for df-cnn
+                count += 1
+                #print(test_accuracy_hist)
+                if count == tasks_to_complete:
+                    with open('./tmp/res.pickle', 'wb') as f:
+                        pickle.dump(test_accuracy_hist, f)
+                        
+                    sys.exit()
+
+
                 if save_param:
                     para_file_name = param_folder_path + '/model_parameter_t%d.mat'%(task_for_train)
                     curr_param = learning_model.get_params_val(sess)
@@ -234,6 +253,14 @@ def train(model_architecture, model_hyperpara, train_hyperpara, dataset, data_ty
     end_time = timeit.default_timer()
     print("End of Training")
     print("Time consumption for training : %.2f" %(end_time-start_time))
+
+    ###JD
+    with open('./tmp/res.pickle', 'wb') as f:
+        pickle.dump(test_accuracy_hist, f)
+                        
+    sys.exit()
+
+    
     if not doLifelong:
         print("Best validation accuracy : %.4f (at epoch %d)" %(abs(best_valid_accuracy), best_epoch))
         print("Test accuracy at that epoch (%d) : %.4f" %(best_epoch, abs(test_accuracy_at_best_epoch)))
@@ -265,6 +292,13 @@ def train(model_architecture, model_hyperpara, train_hyperpara, dataset, data_ty
 
 #### module of training/testing one model
 def train_progressive_net(model_architecture, model_hyperpara, train_hyperpara, dataset, data_type, doLifelong, useGPU=False, GPU_device=0, save_param=False, param_folder_path='saved_param', save_param_interval=100, save_graph=False):
+
+    #JD's change
+    count = 0
+    with open('./task_count.pickle','rb') as f:
+        tasks_to_complete = pickle.load(f)
+
+
     assert ('progressive' in model_architecture and doLifelong), "Use train function appropriate to the architecture (Progressive Neural Net)"
     print("\nTrain function for Progressive Net is called!\n")
 
@@ -394,6 +428,17 @@ def train_progressive_net(model_architecture, model_hyperpara, train_hyperpara, 
                 if doLifelong and learning_step >= epoch_bias+min(patience, learning_step_max//num_task) and len(task_training_order) > 0:
                     print('\n\t>>Change to new task!<<\n')
 
+
+                    ##### JD version for df-cnn
+                    count += 1
+                    #print(test_accuracy_hist)
+                    if count == tasks_to_complete:
+                        with open('./tmp/res.pickle', 'wb') as f:
+                            pickle.dump(test_accuracy_hist, f)
+                        
+                        sys.exit()
+
+
                     if save_param:
                         para_file_name = param_folder_path + '/model_parameter_t%d.mat'%(task_for_train)
                         curr_param = learning_model.get_params_val(sess)
@@ -416,6 +461,14 @@ def train_progressive_net(model_architecture, model_hyperpara, train_hyperpara, 
     end_time = timeit.default_timer()
     print("End of Training")
     print("Time consumption for training : %.2f" %(end_time-start_time))
+
+    ###JD
+    with open('./tmp/res.pickle', 'wb') as f:
+        pickle.dump(test_accuracy_hist, f)
+                        
+    sys.exit()
+
+
     if not doLifelong:
         print("Best validation accuracy : %.4f (at epoch %d)" %(abs(best_valid_accuracy), best_epoch))
         print("Test accuracy at that epoch (%d) : %.4f" %(best_epoch, abs(test_accuracy_at_best_epoch)))
