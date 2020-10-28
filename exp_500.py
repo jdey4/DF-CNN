@@ -107,6 +107,7 @@ with open('./task_count.pickle','wb') as f:
 
 filename = './slot_res'
 tmp_file = './tmp'
+data_folder = './Data/cifar-100-python'
 
 if not os.path.exists(filename):
     os.mkdir(filename)
@@ -114,10 +115,13 @@ if not os.path.exists(filename):
 if not os.path.exists(tmp_file):
     os.mkdir(tmp_file)
 
+if not os.path.exists(data_folder):
+    os.mkdir(data_folder)
+
 
 num_points_per_task = 500
 slot_fold = range(10)
-shift_fold = range(1,2,1)
+shift_fold = range(2,3,1)
 algs = range(2)
 
 for shift in shift_fold:
