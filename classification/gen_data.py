@@ -565,12 +565,12 @@ _cifar100_task_labels_20 = [[4, 1, 54, 9, 0, 5, 6, 3, 12, 8],
 #### read raw data from cifar100 files
 def read_cifar100_data(data_path):
     ## Read training set
-    with open(data_path+'/train', 'rb') as fobj:
+    with open(data_path+'/train.pickle', 'rb') as fobj:
         if sys.version_info.major < 3:
             dict_tmp = pickle.load(fobj)
         else:
             dict_tmp = pickle.load(fobj, encoding='latin1')
-        train_x_tmp, train_y_tmp = dict_tmp['data'], dict_tmp['fine_labels']
+        train_x_tmp, train_y_tmp = dict_tmp[b'data'], dict_tmp[b'fine_labels']
         num_data_in_file = train_x_tmp.shape[0]
         train_x = train_x_tmp.reshape(num_data_in_file, 3, 32, 32).transpose(0, 2, 3, 1).astype(np.float32) / 255.0
         proc_train_x = train_x.reshape(num_data_in_file, 3*32*32).astype(np.float32)
@@ -578,12 +578,12 @@ def read_cifar100_data(data_path):
         print("\tRead train_batch file")
 
     ## Read test set
-    with open(data_path+'/test', 'rb') as fobj:
+    with open(data_path+'/test.pickle', 'rb') as fobj:
         if sys.version_info.major < 3:
             dict_tmp = pickle.load(fobj)
         else:
             dict_tmp = pickle.load(fobj, encoding='latin1')
-        test_x_tmp, test_y_tmp = dict_tmp['data'], dict_tmp['fine_labels']
+        test_x_tmp, test_y_tmp = dict_tmp[b'data'], dict_tmp[b'fine_labels']
         num_data_in_file = test_x_tmp.shape[0]
         test_x = test_x_tmp.reshape(num_data_in_file, 3, 32, 32).transpose(0, 2, 3, 1).astype(np.float32) / 255.0
         proc_test_x = test_x.reshape(num_data_in_file, 3*32*32).astype(np.float32)
