@@ -219,7 +219,7 @@ def model_setup(data_type, data_input_dim, model_type, cnn_padding_type_same=Tru
             '''model_hyperpara['cnn_deconv_stride_sizes'] = [2, 2, 2, 2, 2, 2, 2, 2]
             model_hyperpara['cnn_KB_sizes'] = [2, 16, 2, 24, 2, 32, 2, 36]
             model_hyperpara['cnn_TS_sizes'] = [3, 24, 3, 48, 3, 64, 3, 72]'''
-            model_hyperpara['cnn_deconv_stride_sizes'] = [1, 1, 2, 2, 2, 2, 2, 2, 2, 2]
+            model_hyperpara['cnn_deconv_stride_sizes'] = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
             model_hyperpara['cnn_KB_sizes'] = [2, 16, 2, 24, 2, 32, 2, 36, 2, 40]
             model_hyperpara['cnn_TS_sizes'] = [3, 24, 3, 48, 3, 64, 3, 72, 3, 80]
         elif 'officehome' in data_type:

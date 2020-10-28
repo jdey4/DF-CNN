@@ -135,6 +135,7 @@ def new_dfcnn_direct_fc_net(net_input, k_sizes, ch_sizes, stride_sizes, fc_sizes
 #### TS_size : [deconv_filter_height(and width), deconv_filter_channel]
 #### TS_stride_size : [stride_in_height, stride_in_width]
 def new_dfcnn_layer(layer_input, k_size, ch_size, stride_size, KB_size, TS_size, TS_stride_size, layer_num, task_num, activation_fn=tf.nn.relu, para_activation_fn=tf.nn.relu, KB_param=None, TS_param=None, padding_type='SAME', max_pool=False, pool_size=None):
+    #print(k_size, 'hi', KB_size, 'hi', TS_stride_size, 'hi', k_size[0] == k_size[1] and k_size[0] == (KB_size[0]-1)*TS_stride_size[0]+1)
     assert (k_size[0] == k_size[1] and k_size[0] == (KB_size[0]-1)*TS_stride_size[0]+1), "CNN kernel size does not match the output size of Deconv from KB"
 
     with tf.name_scope('ELLA_cdnn_KB'):
