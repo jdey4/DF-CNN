@@ -116,6 +116,7 @@ if not os.path.exists(tmp_file):
     os.mkdir(tmp_file)
 
 if not os.path.exists(data_folder):
+    os.mkdir('Data')
     os.mkdir(data_folder)
 
 
