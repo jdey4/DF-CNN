@@ -337,7 +337,7 @@ class MTL_CNN_progressive_minibatch():
 
         # model with trainable param
         if self.num_tasks < 2:
-            model_tmp, cnn_param_tmp, cnn_lat_param_tmp, fc_param_tmp = new_progressive_cnn_fc_net(self.model_input_batch, self.cnn_kernel_size, self.cnn_channels_size, self.cnn_stride_size, self.fc_size, cnn_params=None, fc_params=None, padding_type=self.padding_type, max_pool=self.max_pooling, pool_sizes=self.pool_size, dropout=self.dropout, dropout_prob=self.dropout_prob, output_type=None, prev_net=None, cnn_lateral_params=None, trainable=True, dim_reduction_scale=self.dim_reduction_scale)
+            model_tmp, cnn_param_tmp, cnn_lat_param_tmp, fc_param_tmp = new_progressive_cnn_fc_net(self.model_input_batch, self.cnn_kernel_size, self.cnn_channels_size, self.cnn_stride_size, self.fc_size, cnn_params=None, fc_params=None, padding_type=self.padding_type, max_pool=False, pool_sizes=self.pool_size, dropout=self.dropout, dropout_prob=self.dropout_prob, output_type=None, prev_net=None, cnn_lateral_params=None, trainable=True, dim_reduction_scale=self.dim_reduction_scale)
         else:
             model_tmp, cnn_param_tmp, cnn_lat_param_tmp, fc_param_tmp = new_progressive_cnn_fc_net(self.model_input_batch, self.cnn_kernel_size, self.cnn_channels_size, self.cnn_stride_size, self.fc_size, cnn_params=None, fc_params=None, padding_type=self.padding_type, max_pool=self.max_pooling, pool_sizes=self.pool_size, dropout=self.dropout, dropout_prob=self.dropout_prob, output_type=None, prev_net=self.train_models, cnn_lateral_params=None, trainable=True, dim_reduction_scale=self.dim_reduction_scale)
         self.train_models.append(model_tmp)

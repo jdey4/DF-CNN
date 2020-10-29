@@ -277,7 +277,7 @@ def new_progressive_cnn_layer(layer_input, k_size, stride_size=[1, 1, 1, 1], act
     with tf.name_scope('prog_conv_layer'):
         if weight is None:
             weight = new_weight(shape=k_size, trainable=trainable)
-        if bias is None:
+        if bias is None:git 
             bias = new_bias(shape=[k_size[-1]], trainable=trainable)
 
         conv_layer = tf.nn.conv2d(layer_input, weight, strides=stride_size, padding=padding_type) + bias
@@ -310,10 +310,11 @@ def new_progressive_cnn_layer(layer_input, k_size, stride_size=[1, 1, 1, 1], act
         if activation_fn is not None:
             act_conv_layer = activation_fn(conv_layer)
 
-        if max_pooling:
+        '''if max_pooling:
             layer = tf.nn.max_pool(act_conv_layer, ksize=pool_size, strides=pool_size, padding=padding_type)
-        else:
-            layer = act_conv_layer
+        else:'''
+        layer = act_conv_layer
+
     return (layer, [weight, bias], lat_connect_param)
 
 
