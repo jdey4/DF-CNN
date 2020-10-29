@@ -97,7 +97,7 @@ data_y = data_y[:, 0]
 
 #saving the file
 alg = ['Prog_NN', 'DF_CNN']
-task_to_complete = 10
+task_to_complete = 1
 with open('./task_count.pickle','wb') as f:
     pickle.dump(task_to_complete, f)
 
@@ -120,9 +120,21 @@ if not os.path.exists(data_folder):
      os.mkdir(data_folder)
 
 num_points_per_task = 500
+total_task = 10
 slot_fold = range(10)
 shift_fold = range(2,3,1)
 algs = range(2)
+_cifar100_task_labels_10 = [[0,1,2,3,4,5,6,7,8,9],
+                            [10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+                            [20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
+                            [30, 31, 32, 33, 34, 35, 36, 37, 38, 39],
+                            [40, 41, 42, 43, 44, 45, 46, 47, 48, 49],
+                            [50, 51, 52, 53, 54, 55, 56, 57, 58, 59],
+                            [60, 61, 62, 63, 64, 65, 66, 67, 68, 69],
+                            [70, 71, 72, 73, 74, 75, 76, 77, 78, 79],
+                            [80, 81, 82, 83, 84, 85, 86, 87, 88, 89],
+                            [90, 91, 92, 93, 94, 95, 96, 97, 98, 99]]
+
 
 for shift in shift_fold:
     for slot in slot_fold:
@@ -141,12 +153,17 @@ for shift in shift_fold:
             
         with open('./Data/cifar-100-python/test.pickle', 'wb') as f:
             pickle.dump(tmp_test, f)
-    
-        get_ipython().system('rm ./Data/cifar100_mtl_data_group_410_80_1000_10.pkl')
-        experiment()
-        res = unpickle('./tmp/res.pickle')
-        with open(filename+'/'+alg[0]+str(shift)+'_'+str(slot)+'.pickle','wb') as f:
-                pickle.dump(res,f)
+
+        for t in range(total_task):
+            tmp = [_cifar100_task_labels_10[t], _cifar100_task_labels_10[0:9]]
+            with open('./task_labels.pickle','wb') as f:
+                pickle.dump(tmp, f)
+
+            get_ipython().system('rm ./Data/cifar100_mtl_data_group_410_80_1000_10.pkl')
+            experiment()6
+            res = unpickle('./tmp/res.pickle')
+            with open(filename+'/'+alg[0]+str(shift)+'_'+str(slot)+'_'+str(t+1)+'.pickle','wb') as f:
+                    pickle.dump(res,f)
                 
                 
 get_ipython().system('sudo shutdown now')
