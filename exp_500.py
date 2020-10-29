@@ -155,7 +155,9 @@ for shift in shift_fold:
             pickle.dump(tmp_test, f)
 
         for t in range(total_task):
-            tmp = [_cifar100_task_labels_10[t], _cifar100_task_labels_10[0:9]]
+            tmp = [_cifar100_task_labels_10[t]]
+            tmp.extend(_cifar100_task_labels_10[0:9])
+            
             with open('./task_labels.pickle','wb') as f:
                 pickle.dump(tmp, f)
 

@@ -544,7 +544,6 @@ def cifar10_data(data_file_name, num_train_max, num_valid_max, num_test_max, num
 with open('./task_labels.pickle','rb') as f:
     _cifar100_task_labels_10 = pickle.load(f)
 
-
 _cifar100_task_labels_20 = [[4, 1, 54, 9, 0, 5, 6, 3, 12, 8],
                             [4, 23, 54, 34, 0, 2, 6, 36, 12, 41],
                             [22, 23, 15, 34, 26, 2, 27, 36, 47, 41],
