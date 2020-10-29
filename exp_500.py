@@ -78,8 +78,8 @@ def cross_val_data(data_x, data_y, num_points_per_task, slot_no, total_task=10, 
 
 
 def experiment():
-    get_ipython().system('python ./main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type DFCNN --lifelong --save_mat_name CIFAR_res2.mat')
-    #get_ipython().system('python ./main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type PROG --lifelong --save_mat_name CIFAR_res2.mat')
+    #get_ipython().system('python ./main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type DFCNN --lifelong --save_mat_name CIFAR_res2.mat')
+    get_ipython().system('python ./main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type PROG --lifelong --save_mat_name CIFAR_res2.mat')
     #!python ./main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type PROG --lifelong --save_mat_name CIFAR_res.mat
 
 
@@ -107,7 +107,6 @@ with open('./task_count.pickle','wb') as f:
 
 filename = './slot_res'
 tmp_file = './tmp'
-data_folder = './Data/cifar-100-python'
 
 if not os.path.exists(filename):
     os.mkdir(filename)
@@ -115,14 +114,10 @@ if not os.path.exists(filename):
 if not os.path.exists(tmp_file):
     os.mkdir(tmp_file)
 
-if not os.path.exists(data_folder):
-    os.mkdir('Data')
-    os.mkdir(data_folder)
-
 
 num_points_per_task = 500
 slot_fold = range(10)
-shift_fold = range(2,3,1)
+shift_fold = range(1,2,1)
 algs = range(2)
 
 for shift in shift_fold:
@@ -146,7 +141,7 @@ for shift in shift_fold:
         get_ipython().system('rm ./Data/cifar100_mtl_data_group_410_80_1000_10.pkl')
         experiment()
         res = unpickle('./tmp/res.pickle')
-        with open(filename+'/'+alg[1]+str(shift)+'_'+str(slot)+'.pickle','wb') as f:
+        with open(filename+'/'+alg[0]+str(shift)+'_'+str(slot)+'.pickle','wb') as f:
                 pickle.dump(res,f)
                 
                 
