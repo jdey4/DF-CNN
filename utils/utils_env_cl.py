@@ -103,7 +103,7 @@ def num_data_points(data_type, data_percent):
         elif data_percent == 90:
             return (3750, 750, 1000)
         elif data_percent == 100:
-            return (410, 80, 1000) #JD changed the proportion to run on 500 datasamples
+            return (4170, 830, 1000)
         else:
             return (None, None, None)
 
