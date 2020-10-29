@@ -78,8 +78,8 @@ def cross_val_data(data_x, data_y, num_points_per_task, slot_no, total_task=10, 
 
 
 def experiment():
-    #get_ipython().system('python ./main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type DFCNN --lifelong --save_mat_name CIFAR_res2.mat')
-    get_ipython().system('python ./main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type PROG --lifelong --save_mat_name CIFAR_res2.mat')
+    get_ipython().system('python ./main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type DFCNN --lifelong --save_mat_name CIFAR_res2.mat')
+    #get_ipython().system('python ./main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type PROG --lifelong --save_mat_name CIFAR_res2.mat')
     #!python ./main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type PROG --lifelong --save_mat_name CIFAR_res.mat
 
 
@@ -145,7 +145,7 @@ for shift in shift_fold:
         get_ipython().system('rm ./Data/cifar100_mtl_data_group_4170_830_1000_10.pkl')
         experiment()
         res = unpickle('./tmp/res.pickle')
-        with open(filename+'/'+alg[0]+'5000_'+str(shift)+'_'+str(slot)+'.pickle','wb') as f:
+        with open(filename+'/'+alg[1]+'5000_'+str(shift)+'_'+str(slot)+'.pickle','wb') as f:
                 pickle.dump(res,f)
                 
                 
