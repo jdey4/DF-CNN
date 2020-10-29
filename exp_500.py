@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
+import random
 import pickle
 import numpy as np
 from itertools import product
+import torch
 import os
 import tensorflow as tf
 import tensorflow.keras as keras
@@ -13,12 +15,12 @@ import warnings
 warnings.filterwarnings("default", category=DeprecationWarning)
 
 
-# In[ ]:
+# In[3]:
 
 
 def unpickle(file):
     with open(file, 'rb') as fo:
-        dict = pickle.load(fo)
+        dict = pickle.load(fo, encoding='bytes')
     return dict
 
 
@@ -43,7 +45,7 @@ def change_label(label, task):
     return labels
 
 
-# In[ ]:
+# In[4]:
 
 
 def cross_val_data(data_x, data_y, num_points_per_task, slot_no, total_task=10, shift=1):
@@ -60,9 +62,14 @@ def cross_val_data(data_x, data_y, num_points_per_task, slot_no, total_task=10, 
             if class_no==0 and task==0:
                 train_x = x[indx[slot_no*sample_per_class:(slot_no+1)*sample_per_class],:]
                 train_y = y[indx[slot_no*sample_per_class:(slot_no+1)*sample_per_class]]
-            else:
+            elif task==0:
                 train_x = np.concatenate((train_x, x[indx[slot_no*sample_per_class:(slot_no+1)*sample_per_class],:]), axis=0)
                 train_y = np.concatenate((train_y, y[indx[slot_no*sample_per_class:(slot_no+1)*sample_per_class]]), axis=0)
+            else:
+                train_x = np.concatenate((train_x, x[indx[slot_no*sample_per_class:(slot_no+1)*sample_per_class],:]), axis=0)
+                tmp = y[indx[slot_no*sample_per_class:(slot_no+1)*sample_per_class]]
+                np.random.shuffle(tmp)
+                train_y = np.concatenate((train_y, tmp), axis=0)
                 
             if class_no==0:
                 test_x = x[indx[500:600],:]
@@ -74,16 +81,17 @@ def cross_val_data(data_x, data_y, num_points_per_task, slot_no, total_task=10, 
     return train_x, train_y, test_x, test_y
 
 
-# In[ ]:
+# In[5]:
 
 
-def experiment():
-    #get_ipython().system('python ./main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type DFCNN --lifelong --save_mat_name CIFAR_res2.mat')
-    get_ipython().system('python ./main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type PROG --lifelong --save_mat_name CIFAR_res2.mat')
-    #!python ./main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type PROG --lifelong --save_mat_name CIFAR_res.mat
+def experiment(alg):
+    if alg == 1:
+        get_ipython().system('python /data/Jayanta/DF-CNN_IJCAI2019_Release/main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type DFCNN --lifelong --save_mat_name CIFAR_res2.mat')
+    else:
+        get_ipython().system('python ./main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type PROG --lifelong --save_mat_name CIFAR_res.mat')
 
 
-# In[ ]:
+# In[6]:
 
 
 (X_train, y_train), (X_test, y_test) = keras.datasets.cifar100.load_data()
@@ -92,7 +100,7 @@ data_y = np.concatenate([y_train, y_test])
 data_y = data_y[:, 0]
 
 
-# In[ ]:
+# In[7]:
 
 
 #saving the file
@@ -119,9 +127,10 @@ if not os.path.exists(data_folder):
      os.mkdir('Data')
      os.mkdir(data_folder)
 
+
 num_points_per_task = 500
 slot_fold = range(10)
-shift_fold = range(2,3,1)
+shift_fold = range(1,2,1)
 algs = range(2)
 
 for shift in shift_fold:
@@ -143,11 +152,19 @@ for shift in shift_fold:
             pickle.dump(tmp_test, f)
     
         get_ipython().system('rm ./Data/cifar100_mtl_data_group_410_80_1000_10.pkl')
-        experiment()
+        experiment(1)
+        res = unpickle('./tmp/res.pickle')
+        with open(filename+'/'+alg[1]+str(shift)+'_'+str(slot)+'.pickle','wb') as f:
+                pickle.dump(res,f)
+
+        experiment(0)
         res = unpickle('./tmp/res.pickle')
         with open(filename+'/'+alg[0]+str(shift)+'_'+str(slot)+'.pickle','wb') as f:
                 pickle.dump(res,f)
-                
-                
-get_ipython().system('sudo shutdown now')
+
+
+# In[ ]:
+
+
+
 
