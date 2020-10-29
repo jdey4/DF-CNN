@@ -86,9 +86,9 @@ def cross_val_data(data_x, data_y, num_points_per_task, slot_no, total_task=10, 
 
 def experiment(alg):
     if alg == 1:
-        get_ipython().system('python /data/Jayanta/DF-CNN_IJCAI2019_Release/main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type DFCNN --lifelong --save_mat_name CIFAR_res2.mat')
+        get_ipython().system('python main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type DFCNN --lifelong --save_mat_name CIFAR_res2.mat')
     else:
-        get_ipython().system('python ./main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type PROG --lifelong --save_mat_name CIFAR_res.mat')
+        get_ipython().system('python main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type PROG --lifelong --save_mat_name CIFAR_res.mat')
 
 
 # In[6]:
