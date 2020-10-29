@@ -160,7 +160,7 @@ for shift in shift_fold:
                 pickle.dump(tmp, f)
 
             get_ipython().system('rm ./Data/cifar100_mtl_data_group_410_80_1000_10.pkl')
-            experiment()6
+            experiment()
             res = unpickle('./tmp/res.pickle')
             with open(filename+'/'+alg[0]+str(shift)+'_'+str(slot)+'_'+str(t+1)+'.pickle','wb') as f:
                     pickle.dump(res,f)
