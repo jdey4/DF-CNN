@@ -120,7 +120,7 @@ if not os.path.exists(data_folder):
      os.mkdir(data_folder)
 
 num_points_per_task = 500
-slot_fold = range(10)
+slot_fold = range(1)
 shift_fold = range(2,3,1)
 algs = range(2)
 
