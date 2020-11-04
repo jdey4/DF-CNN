@@ -130,7 +130,7 @@ if not os.path.exists(data_folder):
 
 num_points_per_task = 500
 slot_fold = range(10)
-shift_fold = range(1,2,1)
+shift_fold = range(3,4,1)
 algs = range(2)
 
 for shift in shift_fold:
