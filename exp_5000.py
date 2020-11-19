@@ -122,7 +122,7 @@ if not os.path.exists(data_folder):
 num_points_per_task = 5000
 total_task = 10
 slot_fold = range(1)
-shift_fold = range(1,2,1)
+shift_fold = range(5,6,1)
 algs = range(2)
 _cifar100_task_labels_10 = [[0,1,2,3,4,5,6,7,8,9],
                             [10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
