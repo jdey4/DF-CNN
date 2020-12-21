@@ -3,7 +3,7 @@ import os, pickle
 from random import shuffle
 
 import numpy as np
-from tensorflow.examples.tutorials.mnist import input_data
+#from tensorflow.examples.tutorials.mnist import input_data
 
 import skimage
 import matplotlib.image as mpimg

@@ -101,7 +101,7 @@ def main():
         train_hyperpara['train_valid_data_group'] = range(5)
         train_hyperpara['lr'] = 0.0001
         train_hyperpara['lr_decay'] = 1.0/4000.0
-        train_hyperpara['patience'] = 2000
+        train_hyperpara['patience'] = 1 #2000
         train_hyperpara['learning_step_max'] = data_hyperpara['num_tasks'] * train_hyperpara['patience']
 
         train_data, validation_data, test_data = cifar100_data(data_file_name, data_hyperpara['num_train_data'], data_hyperpara['num_valid_data'], data_hyperpara['num_test_data'], data_hyperpara['num_train_group'], data_hyperpara['num_tasks'], multiclass=data_hyperpara['multi_class_label'])

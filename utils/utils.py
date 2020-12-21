@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from tensorflow import trainable_variables
+from tensorflow.compat.v1 import trainable_variables
 import sys
 
 
@@ -70,7 +70,7 @@ def leaky_relu(function_in, leaky_alpha=0.01):
 
 #### function to generate weight parameter
 def new_weight(shape, trainable=True, init_tensor=None):
-    return tf.Variable(tf.truncated_normal(shape, stddev=_weight_init_stddev) if init_tensor is None else init_tensor, trainable=trainable)
+    return tf.Variable(tf.compat.v1.truncated_normal(shape, stddev=_weight_init_stddev) if init_tensor is None else init_tensor, trainable=trainable)
 
 #### function to generate bias parameter
 def new_bias(shape, trainable=True, init_val=0.2, init_tensor=None):
@@ -82,6 +82,6 @@ def count_trainable_var():
     for variable in trainable_variables():
         para_cnt_tmp = 1
         for dim in variable.get_shape():
-            para_cnt_tmp = para_cnt_tmp * dim.value
+            para_cnt_tmp = para_cnt_tmp * dim
         total_para_cnt = total_para_cnt + para_cnt_tmp
     return total_para_cnt

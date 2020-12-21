@@ -347,7 +347,7 @@ def train_progressive_net(model_architecture, model_hyperpara, train_hyperpara, 
     assert ('progressive' in model_architecture and doLifelong), "Use train function appropriate to the architecture (Progressive Neural Net)"
     print("\nTrain function for Progressive Net is called!\n")
 
-    config = tf.ConfigProto()
+    config = tf.compat.v1.ConfigProto()
     if useGPU:
         os.environ["CUDA_VISIBLE_DEVICES"]=str(GPU_device)
         config.gpu_options.allow_growth = True
@@ -411,14 +411,14 @@ def train_progressive_net(model_architecture, model_hyperpara, train_hyperpara, 
     for train_task_cnt in range(num_task):
         #### Construct new task network on top of earlier task networks
         if train_task_cnt > 0:
-            tf.reset_default_graph()
+            tf.compat.v1.reset_default_graph()
             learning_model.new_lifelong_task(params=param_of_prev_columns)
             del param_of_prev_columns
 
         model_train_accuracy, model_valid_accuracy, model_test_accuracy = learning_model.train_accuracy, learning_model.valid_accuracy, learning_model.test_accuracy
 
-        with tf.Session(config=config) as sess:
-            sess.run(tf.global_variables_initializer())
+        with tf.compat.v1.Session(config=config) as sess:
+            sess.run(tf.compat.v1.global_variables_initializer())
             if save_graph:
                 tfboard_writer = tf.summary.FileWriter('./graphs/prog_nn/task_' + str(train_task_cnt), sess.graph)
 

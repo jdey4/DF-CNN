@@ -5,7 +5,7 @@ from math import sqrt
 
 import scipy.io as spio
 import numpy as np
-from tensorflow import reset_default_graph
+from tensorflow.compat.v1 import reset_default_graph
 
 if sys.version_info.major < 3:
     from train import train, train_progressive_net, train_den_net

@@ -4,6 +4,7 @@ import tensorflow as tf
 from utils.utils import *
 from utils.utils_nn import *
 
+tf.compat.v1.disable_eager_execution()
 
 ###############################################################
 #### Single task learner (CNN + FC) for Multi-task setting ####
@@ -311,11 +312,11 @@ class MTL_CNN_progressive_minibatch():
         assert ((prev_net_param is None and self.num_tasks == 1) or (prev_net_param is not None and self.num_tasks > 1)), "Parameters of previous columns are in wrong format"
 
         #### placeholder of model
-        self.epoch = tf.placeholder(dtype=tf.float32)
-        self.dropout_prob = tf.placeholder(dtype=tf.float32)
+        self.epoch = tf.compat.v1.placeholder(dtype=tf.float32)
+        self.dropout_prob = tf.compat.v1.placeholder(dtype=tf.float32)
 
-        self.model_input = tf.placeholder(dtype=tf.float32, shape=[self.batch_size, self.input_size[0]*self.input_size[1]*self.input_size[2]])
-        self.true_output = tf.placeholder(dtype=tf.float32, shape=[self.batch_size])
+        self.model_input = tf.compat.v1.placeholder(dtype=tf.float32, shape=[self.batch_size, self.input_size[0]*self.input_size[1]*self.input_size[2]])
+        self.true_output = tf.compat.v1.placeholder(dtype=tf.float32, shape=[self.batch_size])
         self.model_input_batch = tf.reshape(self.model_input, [-1] + self.input_size)
         # model_input_batch instead of x_batch // true_output instead of y_batch
 
@@ -367,7 +368,7 @@ class MTL_CNN_progressive_minibatch():
         #### functions of model
         self.train_eval, self.valid_eval, self.test_eval, self.train_loss, self.valid_loss, self.test_loss, self.train_accuracy, self.valid_accuracy, self.test_accuracy, self.train_output_label, self.valid_output_label, self.test_output_label = mtl_model_output_functions([self.train_models, self.valid_models, self.test_models], [[self.true_output for _ in range(self.num_tasks)], [self.true_output for _ in range(self.num_tasks)], [self.true_output for _ in range(self.num_tasks)]], self.num_tasks)
 
-        self.update = tf.train.RMSPropOptimizer(learning_rate=self.learn_rate / (1.0 + self.epoch * self.learn_rate_decay)).minimize(self.train_loss[-1])
+        self.update = tf.compat.v1.train.RMSPropOptimizer(learning_rate=self.learn_rate / (1.0 + self.epoch * self.learn_rate_decay)).minimize(self.train_loss[-1])
 
         ### (Caution) No way to remove existing older computational graph, so TF stores all older networks
         self.num_trainable_var = self.num_trainable_var + count_trainable_var()
