@@ -17,6 +17,28 @@ from classification.model.cnn_baseline_model import MTL_several_CNN_minibatch, M
 from classification.model.cnn_den_model import CNN_FC_DEN
 from classification.model.cnn_df_model import Deconvolutional_Factorized_CNN, Deconvolutional_Factorized_CNN_Direct, Deconvolutional_Factorized_CNN_tc2
 
+def get_size(obj, seen=None):
+    """Recursively finds size of objects"""
+    size = sys.getsizeof(obj)
+    if seen is None:
+        seen = set()
+    obj_id = id(obj)
+    if obj_id in seen:
+        return 0
+    # Important mark as seen *before* entering recursion to gracefully handle
+    # self-referential objects
+    seen.add(obj_id)
+    if isinstance(obj, dict):
+        size += sum([get_size(v, seen) for v in obj.values()])
+        size += sum([get_size(k, seen) for k in obj.keys()])
+    elif hasattr(obj, '__dict__'):
+        size += get_size(obj.__dict__, seen)
+    '''elif hasattr(obj, '__iter__') and not isinstance(obj, (str, bytes, bytearray)):
+        size += sum([get_size(i, seen) for i in obj])'''
+    return size
+
+
+
 #### function to generate appropriate deep neural network
 def model_generation(model_architecture, model_hyperpara, train_hyperpara, data_info, tfInitParam=None):
     learning_model, gen_model_success = None, True
@@ -94,7 +116,9 @@ def train(model_architecture, model_hyperpara, train_hyperpara, dataset, data_ty
 
     ##JD code
     count = 0
-    
+    time_info = []
+    model_size = []
+
     with open('./task_count.pickle','rb') as f:
         tasks_to_complete = pickle.load(f)
 
@@ -217,6 +241,9 @@ def train(model_architecture, model_hyperpara, train_hyperpara, dataset, data_ty
             if doLifelong and learning_step >= epoch_bias+min(patience, learning_step_max//num_task) and len(task_training_order) > 0:
                 print('\n\t>>Change to new task!<<\n')
 
+                model_size.append(get_size(learning_model))
+                print(model_size,'model_size')
+
                 ##### JD version for df-cnn
                 count += 1
                 #print(test_accuracy_hist)
@@ -225,7 +252,11 @@ def train(model_architecture, model_hyperpara, train_hyperpara, dataset, data_ty
                         pickle.dump(test_accuracy_hist, f)
                         
                     sys.exit()
+                
+                end_time = timeit.default_timer()
 
+                time_info.append(end_time-start_time)
+                print(time_info)
 
                 if save_param:
                     para_file_name = param_folder_path + '/model_parameter_t%d.mat'%(task_for_train)
@@ -251,13 +282,24 @@ def train(model_architecture, model_hyperpara, train_hyperpara, dataset, data_ty
             savemat(para_file_name, {'parameter': curr_param})
 
     end_time = timeit.default_timer()
+    time_info.append(end_time-start_time)
+    print(time_info)
+    model_size.append(get_size(learning_model))
+    print(model_size,'model_size')
+
     print("End of Training")
     print("Time consumption for training : %.2f" %(end_time-start_time))
 
     ###JD
     with open('./tmp/res.pickle', 'wb') as f:
         pickle.dump(test_accuracy_hist, f)
-                        
+
+    with open('time_info.pickle','wb') as f:
+        pickle.dump(time_info, f)
+
+    with open('memory_info.pickle','wb') as f:
+        pickle.dump(model_size, f) 
+
     sys.exit()
 
     
@@ -295,6 +337,9 @@ def train_progressive_net(model_architecture, model_hyperpara, train_hyperpara, 
 
     #JD's change
     count = 0
+    time_info = []
+    model_size = []
+
     with open('./task_count.pickle','rb') as f:
         tasks_to_complete = pickle.load(f)
 
@@ -428,6 +473,13 @@ def train_progressive_net(model_architecture, model_hyperpara, train_hyperpara, 
                 if doLifelong and learning_step >= epoch_bias+min(patience, learning_step_max//num_task) and len(task_training_order) > 0:
                     print('\n\t>>Change to new task!<<\n')
 
+                    model_size.append(get_size(learning_model))
+                    print(model_size,'model_size')
+
+                    end_time = timeit.default_timer()
+
+                    time_info.append(end_time-start_time)
+                    print(time_info)
 
                     ##### JD version for df-cnn
                     count += 1
@@ -459,13 +511,23 @@ def train_progressive_net(model_architecture, model_hyperpara, train_hyperpara, 
                 tfboard_writer.close()
 
     end_time = timeit.default_timer()
+    time_info.append(end_time-start_time)
+    print(time_info)
+    model_size.append(get_size(learning_model))
+
     print("End of Training")
     print("Time consumption for training : %.2f" %(end_time-start_time))
 
     ###JD
     with open('./tmp/res.pickle', 'wb') as f:
         pickle.dump(test_accuracy_hist, f)
-                        
+
+    with open('time_info.pickle','wb') as f:
+        pickle.dump(time_info, f)  
+
+    with open('memory_info.pickle','wb') as f:
+        pickle.dump(model_size, f) 
+
     sys.exit()
 
 

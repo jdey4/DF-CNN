@@ -155,7 +155,7 @@ def model_setup(data_type, data_input_dim, model_type, cnn_padding_type_same=Tru
         model_hyperpara['kernel_sizes'] = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
         model_hyperpara['stride_sizes'] = [1, 1, 2, 2, 2, 2, 2, 2, 2, 2]
         #model_hyperpara['channel_sizes'] = [32, 32, 64, 64]
-        model_hyperpara['channel_sizes'] = [16, 32, 64, 128, 256]
+        model_hyperpara['channel_sizes'] = [20, 32, 64, 128, 254]
         model_hyperpara['pooling_size'] = [None, None, None, None, None, None, None, None, None, None]
     elif 'officehome' in data_type:
         model_hyperpara['batch_size'] = 16
