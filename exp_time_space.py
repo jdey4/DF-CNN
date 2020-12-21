@@ -164,4 +164,4 @@ for shift in shift_fold:
         with open(mem_res+'/'+alg[0]+str(shift)+'_'+str(slot)+'.pickle','wb') as f:
                 pickle.dump(res,f)
                 
-#get_ipython().system('sudo shutdown now')
+get_ipython().system('sudo shutdown now')
