@@ -27,11 +27,11 @@ class Deconvolutional_Factorized_CNN():
         self.batch_size = batch_size
 
         #### placeholder of model
-        self.epoch = tf.placeholder(dtype=tf.float32)
-        self.dropout_prob = tf.placeholder(dtype=tf.float32)
+        self.epoch = tf.compat.v1.placeholder(dtype=tf.float32)
+        self.dropout_prob = tf.compat.v1.placeholder(dtype=tf.float32)
 
-        self.model_input = [tf.placeholder(dtype=tf.float32, shape=[self.batch_size, self.input_size[0]*self.input_size[1]*self.input_size[2]]) for _ in range(self.num_tasks)]
-        self.true_output = [tf.placeholder(dtype=tf.float32, shape=[self.batch_size]) for _ in range(self.num_tasks)]
+        self.model_input = [tf.compat.v1.placeholder(dtype=tf.float32, shape=[self.batch_size, self.input_size[0]*self.input_size[1]*self.input_size[2]]) for _ in range(self.num_tasks)]
+        self.true_output = [tf.compat.v1.placeholder(dtype=tf.float32, shape=[self.batch_size]) for _ in range(self.num_tasks)]
 
         with tf.name_scope('Data_Minibatch'):
             train_x_batch = [tf.reshape(x, [-1] + self.input_size) for x in self.model_input]
@@ -74,7 +74,7 @@ class Deconvolutional_Factorized_CNN():
         #### loss functions of model
         self.train_eval, self.valid_eval, self.test_eval, self.train_loss, self.valid_loss, self.test_loss, self.train_accuracy, self.valid_accuracy, self.test_accuracy, self.train_output_label, self.valid_output_label, self.test_output_label = mtl_model_output_functions([self.train_models, self.valid_models, self.test_models], [train_y_batch, valid_y_batch, test_y_batch], self.num_tasks)
 
-        self.update = [tf.train.RMSPropOptimizer(learning_rate=self.learn_rate/(1.0+self.epoch*self.learn_rate_decay)).minimize(self.train_loss[x]) for x in range(self.num_tasks)]
+        self.update = [tf.compat.v1.train.RMSPropOptimizer(learning_rate=self.learn_rate/(1.0+self.epoch*self.learn_rate_decay)).minimize(self.train_loss[x]) for x in range(self.num_tasks)]
 
         self.num_trainable_var = count_trainable_var()
 

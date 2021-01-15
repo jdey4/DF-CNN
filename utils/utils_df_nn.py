@@ -16,7 +16,7 @@ else:
 #### function to generate knowledge-base parameters for ELLA_tensorfactor layer
 def new_KB_param(shape, layer_number, task_number):
     kb_name = 'KB_'+str(layer_number)+'_'+str(task_number)
-    return tf.get_variable(name=kb_name, shape=shape, dtype=tf.float32)
+    return tf.compat.v1.get_variable(name=kb_name, shape=shape, dtype=tf.float32)
 
 #### function to generate task-specific parameters for ELLA_tensorfactor layer
 def new_dfcnn_direct_TS_param(shape, layer_number, task_number):
@@ -26,12 +26,12 @@ def new_dfcnn_direct_TS_param(shape, layer_number, task_number):
 #### function to generate task-specific parameters for ELLA_tensorfactor layer
 def new_dfcnn_TS_param(shape, layer_number, task_number):
     ts_w_name, ts_b_name, ts_k_name, ts_p_name = 'TS_DeconvW0_'+str(layer_number)+'_'+str(task_number), 'TS_Deconvb0_'+str(layer_number)+'_'+str(task_number), 'TS_ConvW1_'+str(layer_number)+'_'+str(task_number), 'TS_Convb0_'+str(layer_number)+'_'+str(task_number)
-    return [tf.get_variable(name=ts_w_name, shape=shape[0], dtype=tf.float32), tf.get_variable(name=ts_b_name, shape=shape[1], dtype=tf.float32), tf.get_variable(name=ts_k_name, shape=shape[2], dtype=tf.float32), tf.get_variable(name=ts_p_name, shape=shape[3], dtype=tf.float32)]
+    return [tf.compat.v1.get_variable(name=ts_w_name, shape=shape[0], dtype=tf.float32), tf.compat.v1.get_variable(name=ts_b_name, shape=shape[1], dtype=tf.float32), tf.compat.v1.get_variable(name=ts_k_name, shape=shape[2], dtype=tf.float32), tf.compat.v1.get_variable(name=ts_p_name, shape=shape[3], dtype=tf.float32)]
 
 #### function to generate task-specific parameters for ELLA_tensorfactor layer
 def new_dfcnn_tc2_TS_param(shape, layer_number, task_number):
     ts_w_name, ts_b_name, ts_k_name, ts_k_name2, ts_p_name = 'TS_DeconvW0_'+str(layer_number)+'_'+str(task_number), 'TS_Deconvb0_'+str(layer_number)+'_'+str(task_number), 'TS_tdot_W1_'+str(layer_number)+'_'+str(task_number), 'TS_tdot_W2_'+str(layer_number)+'_'+str(task_number), 'TS_tdot_b0_'+str(layer_number)+'_'+str(task_number)
-    return [tf.get_variable(name=ts_w_name, shape=shape[0], dtype=tf.float32), tf.get_variable(name=ts_b_name, shape=shape[1], dtype=tf.float32), tf.get_variable(name=ts_k_name, shape=shape[2], dtype=tf.float32), tf.get_variable(name=ts_k_name2, shape=shape[3], dtype=tf.float32), tf.get_variable(name=ts_p_name, shape=shape[4], dtype=tf.float32)]
+    return [tf.compat.v1.get_variable(name=ts_w_name, shape=shape[0], dtype=tf.float32), tf.compat.v1.get_variable(name=ts_b_name, shape=shape[1], dtype=tf.float32), tf.compat.v1.get_variable(name=ts_k_name, shape=shape[2], dtype=tf.float32), tf.compat.v1.get_variable(name=ts_k_name2, shape=shape[3], dtype=tf.float32), tf.compat.v1.get_variable(name=ts_p_name, shape=shape[4], dtype=tf.float32)]
 
 
 

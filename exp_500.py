@@ -78,7 +78,7 @@ def cross_val_data(data_x, data_y, num_points_per_task, slot_no, total_task=10, 
 
 
 def experiment():
-    get_ipython().system('python ./main_train_cl.py --gpu 1 --data_type CIFAR100_10 --data_percent 100 --model_type DFCNN --lifelong --save_mat_name CIFAR_res2.mat')
+    get_ipython().system('python ./main_train_cl.py --gpu 0 --data_type CIFAR100_10 --data_percent 100 --model_type DFCNN --lifelong --save_mat_name CIFAR_res2.mat')
     #get_ipython().system('python ./main_train_cl.py --gpu 1 --data_type CIFAR100_10 --data_percent 100 --model_type PROG --lifelong --save_mat_name CIFAR_res2.mat')
     #!python ./main_train_cl.py --data_type CIFAR100_10 --data_percent 100 --model_type PROG --lifelong --save_mat_name CIFAR_res.mat
 
@@ -149,5 +149,5 @@ for shift in shift_fold:
                 pickle.dump(res,f)
                 
                 
-get_ipython().system('sudo shutdown now')
+#get_ipython().system('sudo shutdown now')
 

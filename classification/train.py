@@ -125,7 +125,7 @@ def train(model_architecture, model_hyperpara, train_hyperpara, dataset, data_ty
 
     assert ('progressive' not in model_architecture and 'den' not in model_architecture and 'dynamically' not in model_architecture), "Use train function appropriate to the architecture"
 
-    config = tf.ConfigProto()
+    config = tf.compat.v1.ConfigProto()
     if useGPU:
         os.environ["CUDA_VISIBLE_DEVICES"]=str(GPU_device)
         config.gpu_options.allow_growth = True
@@ -181,8 +181,8 @@ def train(model_architecture, model_hyperpara, train_hyperpara, dataset, data_ty
     train_accuracy_hist, valid_accuracy_hist, test_accuracy_hist, best_test_accuracy_hist = [], [], [], []
 
     model_train_acc, model_valid_acc, model_test_acc = learning_model.train_accuracy, learning_model.valid_accuracy, learning_model.test_accuracy
-    with tf.Session(config=config) as sess:
-        sess.run(tf.global_variables_initializer())
+    with tf.compat.v1.Session(config=config) as sess:
+        sess.run(tf.compat.v1.global_variables_initializer())
         if save_graph:
             tfboard_writer = tf.summary.FileWriter('./graphs', sess.graph)
 
