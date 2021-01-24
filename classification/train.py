@@ -17,6 +17,28 @@ from classification.model.cnn_baseline_model import MTL_several_CNN_minibatch, M
 from classification.model.cnn_den_model import CNN_FC_DEN
 from classification.model.cnn_df_model import Deconvolutional_Factorized_CNN, Deconvolutional_Factorized_CNN_Direct, Deconvolutional_Factorized_CNN_tc2
 
+def get_size(obj, seen=None):
+    """Recursively finds size of objects"""
+    size = sys.getsizeof(obj)
+    if seen is None:
+        seen = set()
+    obj_id = id(obj)
+    if obj_id in seen:
+        return 0
+    # Important mark as seen *before* entering recursion to gracefully handle
+    # self-referential objects
+    seen.add(obj_id)
+    if isinstance(obj, dict):
+        size += sum([get_size(v, seen) for v in obj.values()])
+        size += sum([get_size(k, seen) for k in obj.keys()])
+    elif hasattr(obj, '__dict__'):
+        size += get_size(obj.__dict__, seen)
+    '''elif hasattr(obj, '__iter__') and not isinstance(obj, (str, bytes, bytearray)):
+        size += sum([get_size(i, seen) for i in obj])'''
+    return size
+
+
+
 #### function to generate appropriate deep neural network
 def model_generation(model_architecture, model_hyperpara, train_hyperpara, data_info, tfInitParam=None):
     learning_model, gen_model_success = None, True
@@ -94,14 +116,23 @@ def train(model_architecture, model_hyperpara, train_hyperpara, dataset, data_ty
 
     ##JD code
     count = 0
-    
+    iter_jd = list(
+        range(
+            500,
+            0,
+            -50
+        )
+    )
+    time_info = []
+    model_size = []
+
     with open('./task_count.pickle','rb') as f:
         tasks_to_complete = pickle.load(f)
 
 
     assert ('progressive' not in model_architecture and 'den' not in model_architecture and 'dynamically' not in model_architecture), "Use train function appropriate to the architecture"
 
-    config = tf.ConfigProto()
+    config = tf.compat.v1.ConfigProto()
     if useGPU:
         os.environ["CUDA_VISIBLE_DEVICES"]=str(GPU_device)
         config.gpu_options.allow_growth = True
@@ -157,8 +188,8 @@ def train(model_architecture, model_hyperpara, train_hyperpara, dataset, data_ty
     train_accuracy_hist, valid_accuracy_hist, test_accuracy_hist, best_test_accuracy_hist = [], [], [], []
 
     model_train_acc, model_valid_acc, model_test_acc = learning_model.train_accuracy, learning_model.valid_accuracy, learning_model.test_accuracy
-    with tf.Session(config=config) as sess:
-        sess.run(tf.global_variables_initializer())
+    with tf.compat.v1.Session(config=config) as sess:
+        sess.run(tf.compat.v1.global_variables_initializer())
         if save_graph:
             tfboard_writer = tf.summary.FileWriter('./graphs', sess.graph)
 
@@ -183,6 +214,8 @@ def train(model_architecture, model_hyperpara, train_hyperpara, dataset, data_ty
             validation_accuracy_tmp = [0.0 for _ in range(num_task)]
             test_accuracy_tmp = [0.0 for _ in range(num_task)]
             for task_cnt in range(num_task):
+                patience = iter_jd[task_cnt]
+                
                 for batch_cnt in range(num_train[task_cnt]//batch_size):
                     train_accuracy_tmp[task_cnt] = train_accuracy_tmp[task_cnt] + sess.run(model_train_acc[task_cnt], feed_dict={learning_model.model_input[task_cnt]: train_data[task_cnt][0][batch_cnt*batch_size:(batch_cnt+1)*batch_size, :], learning_model.true_output[task_cnt]: train_data[task_cnt][1][batch_cnt*batch_size:(batch_cnt+1)*batch_size], learning_model.dropout_prob: 1.0})
                 train_accuracy_tmp[task_cnt] = train_accuracy_tmp[task_cnt]/((num_train[task_cnt]//batch_size)*batch_size)
@@ -217,6 +250,9 @@ def train(model_architecture, model_hyperpara, train_hyperpara, dataset, data_ty
             if doLifelong and learning_step >= epoch_bias+min(patience, learning_step_max//num_task) and len(task_training_order) > 0:
                 print('\n\t>>Change to new task!<<\n')
 
+                model_size.append(get_size(learning_model))
+                print(model_size,'model_size')
+
                 ##### JD version for df-cnn
                 count += 1
                 #print(test_accuracy_hist)
@@ -225,7 +261,11 @@ def train(model_architecture, model_hyperpara, train_hyperpara, dataset, data_ty
                         pickle.dump(test_accuracy_hist, f)
                         
                     sys.exit()
+                
+                end_time = timeit.default_timer()
 
+                time_info.append(end_time-start_time)
+                print(time_info)
 
                 if save_param:
                     para_file_name = param_folder_path + '/model_parameter_t%d.mat'%(task_for_train)
@@ -251,13 +291,24 @@ def train(model_architecture, model_hyperpara, train_hyperpara, dataset, data_ty
             savemat(para_file_name, {'parameter': curr_param})
 
     end_time = timeit.default_timer()
+    time_info.append(end_time-start_time)
+    print(time_info)
+    model_size.append(get_size(learning_model))
+    print(model_size,'model_size')
+
     print("End of Training")
     print("Time consumption for training : %.2f" %(end_time-start_time))
 
     ###JD
     with open('./tmp/res.pickle', 'wb') as f:
         pickle.dump(test_accuracy_hist, f)
-                        
+
+    with open('time_info.pickle','wb') as f:
+        pickle.dump(time_info, f)
+
+    with open('memory_info.pickle','wb') as f:
+        pickle.dump(model_size, f) 
+
     sys.exit()
 
     
@@ -295,6 +346,9 @@ def train_progressive_net(model_architecture, model_hyperpara, train_hyperpara, 
 
     #JD's change
     count = 0
+    time_info = []
+    model_size = []
+
     with open('./task_count.pickle','rb') as f:
         tasks_to_complete = pickle.load(f)
 
@@ -302,7 +356,7 @@ def train_progressive_net(model_architecture, model_hyperpara, train_hyperpara, 
     assert ('progressive' in model_architecture and doLifelong), "Use train function appropriate to the architecture (Progressive Neural Net)"
     print("\nTrain function for Progressive Net is called!\n")
 
-    config = tf.ConfigProto()
+    config = tf.compat.v1.ConfigProto()
     if useGPU:
         os.environ["CUDA_VISIBLE_DEVICES"]=str(GPU_device)
         config.gpu_options.allow_growth = True
@@ -366,14 +420,14 @@ def train_progressive_net(model_architecture, model_hyperpara, train_hyperpara, 
     for train_task_cnt in range(num_task):
         #### Construct new task network on top of earlier task networks
         if train_task_cnt > 0:
-            tf.reset_default_graph()
+            tf.compat.v1.reset_default_graph()
             learning_model.new_lifelong_task(params=param_of_prev_columns)
             del param_of_prev_columns
 
         model_train_accuracy, model_valid_accuracy, model_test_accuracy = learning_model.train_accuracy, learning_model.valid_accuracy, learning_model.test_accuracy
 
-        with tf.Session(config=config) as sess:
-            sess.run(tf.global_variables_initializer())
+        with tf.compat.v1.Session(config=config) as sess:
+            sess.run(tf.compat.v1.global_variables_initializer())
             if save_graph:
                 tfboard_writer = tf.summary.FileWriter('./graphs/prog_nn/task_' + str(train_task_cnt), sess.graph)
 
@@ -428,6 +482,13 @@ def train_progressive_net(model_architecture, model_hyperpara, train_hyperpara, 
                 if doLifelong and learning_step >= epoch_bias+min(patience, learning_step_max//num_task) and len(task_training_order) > 0:
                     print('\n\t>>Change to new task!<<\n')
 
+                    model_size.append(get_size(learning_model))
+                    print(model_size,'model_size')
+
+                    end_time = timeit.default_timer()
+
+                    time_info.append(end_time-start_time)
+                    print(time_info)
 
                     ##### JD version for df-cnn
                     count += 1
@@ -459,13 +520,23 @@ def train_progressive_net(model_architecture, model_hyperpara, train_hyperpara, 
                 tfboard_writer.close()
 
     end_time = timeit.default_timer()
+    time_info.append(end_time-start_time)
+    print(time_info)
+    model_size.append(get_size(learning_model))
+
     print("End of Training")
     print("Time consumption for training : %.2f" %(end_time-start_time))
 
     ###JD
     with open('./tmp/res.pickle', 'wb') as f:
         pickle.dump(test_accuracy_hist, f)
-                        
+
+    with open('time_info.pickle','wb') as f:
+        pickle.dump(time_info, f)  
+
+    with open('memory_info.pickle','wb') as f:
+        pickle.dump(model_size, f) 
+
     sys.exit()
 
 
