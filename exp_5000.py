@@ -48,7 +48,7 @@ def change_label(label, task):
 # In[4]:
 
 
-def cross_val_data(data_x, data_y, num_points_per_task, slot_no, total_task=10, shift=1):
+def cross_val_data(data_x, data_y, num_points_per_task, total_task=10, shift=1):
     x = data_x.copy()
     y = data_y.copy()
     idx = [np.where(data_y == u)[0] for u in np.unique(data_y)]
@@ -60,14 +60,14 @@ def cross_val_data(data_x, data_y, num_points_per_task, slot_no, total_task=10, 
             indx = np.roll(idx[class_no],(shift-1)*100)
             
             if class_no==0 and task==0:
-                train_x = x[indx[slot_no*sample_per_class:(slot_no+1)*sample_per_class],:]
-                train_y = y[indx[slot_no*sample_per_class:(slot_no+1)*sample_per_class]]
+                train_x = x[indx[0:sample_per_class],:]
+                train_y = y[indx[0:sample_per_class]]
             elif task==0:
-                train_x = np.concatenate((train_x, x[indx[slot_no*sample_per_class:(slot_no+1)*sample_per_class],:]), axis=0)
-                train_y = np.concatenate((train_y, y[indx[slot_no*sample_per_class:(slot_no+1)*sample_per_class]]), axis=0)
+                train_x = np.concatenate((train_x, x[indx[0:sample_per_class],:]), axis=0)
+                train_y = np.concatenate((train_y, y[indx[0:sample_per_class]]), axis=0)
             else:
-                train_x = np.concatenate((train_x, x[indx[slot_no*sample_per_class:(slot_no+1)*sample_per_class],:]), axis=0)
-                tmp = y[indx[slot_no*sample_per_class:(slot_no+1)*sample_per_class]]
+                train_x = np.concatenate((train_x, x[indx[0:sample_per_class],:]), axis=0)
+                tmp = y[indx[0:sample_per_class]]
                 np.random.shuffle(tmp)
                 train_y = np.concatenate((train_y, tmp), axis=0)
                 
@@ -128,39 +128,32 @@ if not os.path.exists(data_folder):
      os.mkdir(data_folder)
 
 
-num_points_per_task = 500
-slot_fold = range(10)
-shift_fold = range(2,3,1)
+num_points_per_task = 5000
+shift_fold = range(1,7,1)
 algs = range(2)
 
 for shift in shift_fold:
-    for slot in slot_fold:
-        tmp_train = {}
-        tmp_test = {}
-        train_x, train_y, test_x, test_y = cross_val_data(
-            data_x,data_y,num_points_per_task,slot,shift=shift
-        )
-        tmp_train[b'data'] = train_x
-        tmp_train[b'fine_labels'] = train_y
-        tmp_test[b'data'] = test_x
-        tmp_test[b'fine_labels'] = test_y
+    tmp_train = {}
+    tmp_test = {}
+    train_x, train_y, test_x, test_y = cross_val_data(
+        data_x,data_y,num_points_per_task,shift=shift
+    )
+    tmp_train[b'data'] = train_x
+    tmp_train[b'fine_labels'] = train_y
+    tmp_test[b'data'] = test_x
+    tmp_test[b'fine_labels'] = test_y
         
-        with open('./Data/cifar-100-python/train.pickle', 'wb') as f:
-            pickle.dump(tmp_train, f)
+    with open('./Data/cifar-100-python/train.pickle', 'wb') as f:
+        pickle.dump(tmp_train, f)
             
-        with open('./Data/cifar-100-python/test.pickle', 'wb') as f:
-            pickle.dump(tmp_test, f)
+    with open('./Data/cifar-100-python/test.pickle', 'wb') as f:
+        pickle.dump(tmp_test, f)
     
-        get_ipython().system('rm ./Data/cifar100_mtl_data_group_410_80_1000_10.pkl')
-        experiment(1)
-        res = unpickle('./tmp/res.pickle')
-        with open(filename+'/'+alg[1]+str(shift)+'_'+str(slot)+'.pickle','wb') as f:
-                pickle.dump(res,f)
-
-        experiment(0)
-        res = unpickle('./tmp/res.pickle')
-        with open(filename+'/'+alg[0]+str(shift)+'_'+str(slot)+'.pickle','wb') as f:
-                pickle.dump(res,f)
+    get_ipython().system('rm ./Data/cifar100_mtl_data_group_4170_830_1000_10.pkl')
+    experiment(1)
+    res = unpickle('./tmp/res.pickle')
+    with open(filename+'/'+alg[1]+'_'+str(shift)+'.pickle','wb') as f:
+        pickle.dump(res,f)
 
 
 # In[ ]:
